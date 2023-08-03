@@ -1,7 +1,14 @@
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
+
+import sweeper.Box;
 
 public class JavaSweeper extends JFrame {
+    private static final int COLS = 15;
+    private static final int ROWS = 1;
+    private static final int IMAGE_SIZE = 50;
+
     private JPanel panel;
 
     public static void main(String[] args) {
@@ -9,6 +16,7 @@ public class JavaSweeper extends JFrame {
     }
 
     private JavaSweeper() throws HeadlessException {
+        setImages();
         initPanel();
         initFrame();
     }
@@ -18,11 +26,15 @@ public class JavaSweeper extends JFrame {
             @Override
             protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
-                g.drawLine(0,0,500,300);
+                for (Box box : Box.values()) {
+                    g.drawImage((Image) box.image,
+                            box.ordinal() * IMAGE_SIZE,0, this);
+                }
             }
         };
 
-        panel.setPreferredSize(new Dimension(500, 300));
+        panel.setPreferredSize(new Dimension(COLS * IMAGE_SIZE,
+                                            ROWS * IMAGE_SIZE));
         add(panel);
     }
 
@@ -33,5 +45,16 @@ public class JavaSweeper extends JFrame {
         setResizable(false);
         pack();
         setLocationRelativeTo(null);
+    }
+
+    private void setImages() {
+        for (Box box : Box.values()) {
+            box.image = getImage(box.name().toLowerCase());
+        }
+    }
+
+    private Image getImage(String name) {
+        String fileName = "img/" + name + ".png";
+        return new ImageIcon(Objects.requireNonNull(getClass().getResource(fileName))).getImage();
     }
 }
